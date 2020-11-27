@@ -14,7 +14,7 @@ function gameOver(state) {
 
     for (let i = 0; i < state.board.length; i++) {
         for (let j = 0; j < state.board[i].length; j++) {
-            if (!isNaN(state.board[i][j])) {
+            if (state.board[i][j] == null) {
                 count += 1;
             }
         }
@@ -36,6 +36,9 @@ function gameOver(state) {
 
         // Set terminal state to true.
         state.terminal = true;
+
+        console.log("Black", state.blackStoneLives);
+        console.log("White", state.whiteStoneLives);
     }
 }
 
@@ -284,13 +287,14 @@ function countLives(state) {
  * @param {boolean} human boolean representation of who placed the stone.
  * True represents the human player, and false represents the AI.
  */
-function placeStone(state, index, human) {
+function placeStone(state, index, human, copy) {
 
     // Get the row and column from the index.
     var row = index.split('-')[0];
     var col = index.split('-')[1];
 
-    if (isNaN(state.board[row][col])) {
+    // Cell must be empty in order to place stone.
+    if (state.board[row][col] == null) {
 
         var stone = 0;
 
@@ -305,8 +309,11 @@ function placeStone(state, index, human) {
         // Set the position of the board array to the stone placed.
         state.board[row][col] = stone;
 
-        // Call the display stone function.
-        displayStone(index, human);
+        if (!copy) {
+            // If this is the real board and not a copy, call the 
+            // display stone function.
+            displayStone(index, human);
+        }
 
         // Count the lives of the black and white stones.
         countLives(state);
@@ -315,18 +322,12 @@ function placeStone(state, index, human) {
         gameOver(state);
 
         if (human) {
-            // console.log("Black", state.blackStoneLives);
+            var possibleStates = getPossibleStates(state);
 
-            for (let i = 0; i < state.board.length; i++) {
-                for (let j = 0; j < state.board[i].length; j++) {
-                    if (isNaN(state.board[i][j])) {
-                        var index = i.toString() + '-' + j.toString();
-                        placeStone(state, index, !human);
-                        // console.log("White", state.whiteStoneLives);
-                        return true;
-                    }
-                }
-            }
+            console.log("Game State");
+            console.log(state.board, '\n');
+
+            possibleStates.forEach(possibleState => console.log(possibleState.board));
         }
     }
 }
