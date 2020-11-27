@@ -9,36 +9,41 @@ const resetButton = document.getElementById('reset');
  * 
  * @param {State} state the game state.
  */
-function gameOver(state) {
-    var count = 0;
+function gameOver(state, copy) {
 
-    for (let i = 0; i < state.board.length; i++) {
-        for (let j = 0; j < state.board[i].length; j++) {
-            if (state.board[i][j] == null) {
-                count += 1;
+    if (!copy) {
+        var count = 0;
+
+        for (let i = 0; i < state.board.length; i++) {
+            for (let j = 0; j < state.board[i].length; j++) {
+                if (state.board[i][j] != null) {
+                    count += 1;
+                }
             }
         }
-    }
 
-    if (count == (state.board.length * state.board[0].length)) {
-        // If the stones fill up all of the spots on the board, check
-        // for the winner.
-        if (state.blackStoneLives > state.whiteStoneLives) {
-            console.log("Black Wins!")
-            state.value = 1;
-        } else if (state.blackStoneLives < state.whiteStoneLives) {
-            console.log("White Wins!")
-            state.value = -1;
-        } else {
-            console.log("Draw")
-            state.value = 0;
+        var totalCells = state.board.length * state.board[0].length;
+
+        if (count == totalCells) {
+            // If the stones fill up all of the spots on the board, check
+            // for the winner.
+            if (state.blackStoneLives > state.whiteStoneLives) {
+                console.log("Black Wins!")
+                state.value = 1;
+            } else if (state.blackStoneLives < state.whiteStoneLives) {
+                console.log("White Wins!")
+                state.value = -1;
+            } else {
+                console.log("Draw")
+                state.value = 0;
+            }
+
+            // Set terminal state to true.
+            state.terminal = true;
+
+            console.log("Black", state.blackStoneLives);
+            console.log("White", state.whiteStoneLives);
         }
-
-        // Set terminal state to true.
-        state.terminal = true;
-
-        console.log("Black", state.blackStoneLives);
-        console.log("White", state.whiteStoneLives);
     }
 }
 
@@ -279,6 +284,16 @@ function countLives(state) {
     }
 }
 
+/**
+ * 
+ * @param {State} state game state.
+ */
+function stoneDifference(state) {
+    // Set the state's value to the total white stone lives minus the
+    // black stone lives.
+    state.value = state.whiteStoneLives - state.blackStoneLives;
+}
+
 
 /**
  * 
@@ -318,16 +333,18 @@ function placeStone(state, index, human, copy) {
         // Count the lives of the black and white stones.
         countLives(state);
 
+        // Get the difference of the stone lives for the AI function.
+        stoneDifference(state);
+
         // Call the game over function.
-        gameOver(state);
+        gameOver(state, copy);
 
-        if (human) {
-            var possibleStates = getPossibleStates(state);
+        if (human && !copy) {
+            results = minimax(state, 3, -Infinity, Infinity, true);
+            var eval = results[0];
+            var move = results[1];
 
-            console.log("Game State");
-            console.log(state.board, '\n');
-
-            possibleStates.forEach(possibleState => console.log(possibleState.board));
+            placeStone(state, move, false, false);
         }
     }
 }

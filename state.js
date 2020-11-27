@@ -5,5 +5,6 @@ class State {
         this.whiteStoneLives = 0;
         this.terminal = false;
         this.value = 0;
+        this.move = "";
     }
 }

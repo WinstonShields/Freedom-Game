@@ -1,4 +1,4 @@
-function getPossibleStates(state) {
+function getPossibleStates(state, human) {
 
     var possibleStates = [];
 
@@ -12,8 +12,15 @@ function getPossibleStates(state) {
                 // Create a string out of the current index.
                 var index = i.toString() + '-' + j.toString();
 
-                // Place a stone in the empty index.
-                placeStone(possibleState, index, false, true);
+                if (human) {
+                    // Place a black stone in the empty index.
+                    placeStone(possibleState, index, true, true);
+                } else {
+                    // Place a white stone in the empty index.
+                    placeStone(possibleState, index, false, true);
+                }
+
+                possibleState.move = i.toString() + "-" + j.toString();
 
                 // Push the possible state in the list of possible states.
                 possibleStates.push(possibleState);
@@ -26,14 +33,65 @@ function getPossibleStates(state) {
     return possibleStates;
 }
 
-// function minimax(state, depth, maximizingPlayer) {
-//     if (depth == 0 || state.terminal) {
+function minimax(state, depth, alpha, beta, maximizingPlayer) {
 
-//     }
+    if (depth == 0 || state.terminal) {
+        // console.log(state.board);
+        // console.log(state.value);
+        return [state.value, state.move];
+    }
 
-//     if (maximizingPlayer) {
+    if (maximizingPlayer) {
 
-//     } else {
+        var maxEval = -Infinity;
 
-//     }
-// }
+        let possibleStates = getPossibleStates(state, false);
+
+        var move = "";
+
+        for (let i = 0; i < possibleStates.length; i++) {
+            var results = minimax(possibleStates[i], depth - 1, alpha, beta, false);
+
+            var eval = results[0];
+
+            // maxEval = Math.max(maxEval, eval);
+
+            if (maxEval <= eval) {
+                maxEval = eval;
+                move = possibleStates[i].move
+            }
+
+            alpha = Math.max(alpha, eval);
+
+            if (beta <= alpha) {
+                break;
+            }
+        }
+        return [maxEval, move];
+
+    } else {
+        var minEval = Infinity;
+
+        let possibleStates = getPossibleStates(state, true);
+
+        var move = "";
+
+        for (let i = 0; i < possibleStates.length; i++) {
+            // var eval = minimax(possibleStates[i], depth - 1, alpha, beta, true);
+            var results = minimax(possibleStates[i], depth - 1, alpha, beta, true);
+            var eval = results[0];
+            // minEval = Math.min(minEval, eval);
+
+            if (minEval >= eval) {
+                minEval = eval;
+                move = possibleStates[i].move;
+            }
+            beta = Math.min(beta, eval);
+            if (beta <= alpha) {
+                break;
+            }
+        }
+
+        return [minEval, move];
+    }
+}
