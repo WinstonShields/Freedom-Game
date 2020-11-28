@@ -224,7 +224,7 @@ function countInvertedDiagonal(state, i, j, counter, blackCount, whiteCount, bla
  * 
  * @param {State} state the game state.
  */
-function countLives(state) {
+function countLives(state, copy) {
 
     state.blackStoneLives = 0;
     state.whiteStoneLives = 0;
@@ -282,6 +282,10 @@ function countLives(state) {
 
         }
     }
+
+    if (!copy) {
+        status.innerHTML = state.whiteStoneLives.toString() + " - " + state.blackStoneLives.toString();
+    }
 }
 
 /**
@@ -291,7 +295,7 @@ function countLives(state) {
 function stoneDifference(state) {
     // Set the state's value to the total white stone lives minus the
     // black stone lives.
-    state.value = state.whiteStoneLives - state.blackStoneLives;
+    state.value = state.blackStoneLives - state.whiteStoneLives;
 }
 
 
@@ -316,9 +320,9 @@ function placeStone(state, index, human, copy) {
         // If the current player is human, set the stone to 1, otherwise,
         // set it to 0.
         if (human) {
-            stone = 1;
-        } else {
             stone = 0;
+        } else {
+            stone = 1;
         }
 
         // Set the position of the board array to the stone placed.
@@ -331,7 +335,7 @@ function placeStone(state, index, human, copy) {
         }
 
         // Count the lives of the black and white stones.
-        countLives(state);
+        countLives(state, copy);
 
         // Get the difference of the stone lives for the AI function.
         stoneDifference(state);
@@ -341,7 +345,6 @@ function placeStone(state, index, human, copy) {
 
         if (human && !copy) {
             results = minimax(state, 3, -Infinity, Infinity, true);
-            var eval = results[0];
             var move = results[1];
 
             placeStone(state, move, false, false);
@@ -367,8 +370,8 @@ function displayStone(index, human) {
     // If the current player is human, load the black stone, otherwise,
     // load the white stone.
     if (human) {
-        stoneImg.src = "images/black_stone.jpg";
-    } else {
         stoneImg.src = "images/white_stone.jpg";
+    } else {
+        stoneImg.src = "images/black_stone.jpg";
     }
 }

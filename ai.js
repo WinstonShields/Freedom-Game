@@ -36,8 +36,6 @@ function getPossibleStates(state, human) {
 function minimax(state, depth, alpha, beta, maximizingPlayer) {
 
     if (depth == 0 || state.terminal) {
-        // console.log(state.board);
-        // console.log(state.value);
         return [state.value, state.move];
     }
 
@@ -56,7 +54,7 @@ function minimax(state, depth, alpha, beta, maximizingPlayer) {
 
             // maxEval = Math.max(maxEval, eval);
 
-            if (maxEval <= eval) {
+            if (maxEval < eval) {
                 maxEval = eval;
                 move = possibleStates[i].move
             }
@@ -77,12 +75,10 @@ function minimax(state, depth, alpha, beta, maximizingPlayer) {
         var move = "";
 
         for (let i = 0; i < possibleStates.length; i++) {
-            // var eval = minimax(possibleStates[i], depth - 1, alpha, beta, true);
             var results = minimax(possibleStates[i], depth - 1, alpha, beta, true);
             var eval = results[0];
-            // minEval = Math.min(minEval, eval);
 
-            if (minEval >= eval) {
+            if (minEval > eval) {
                 minEval = eval;
                 move = possibleStates[i].move;
             }
