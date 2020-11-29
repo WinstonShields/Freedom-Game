@@ -12,20 +12,23 @@ function getPossibleStates(state, human) {
                 // Create a string out of the current index.
                 var index = i.toString() + '-' + j.toString();
 
+                var placed = false;
+
                 if (human) {
                     // Place a black stone in the empty index.
-                    placeStone(possibleState, index, true, true);
+                    placed = placeStone(possibleState, index, true, true);
                 } else {
                     // Place a white stone in the empty index.
-                    placeStone(possibleState, index, false, true);
+                    placed = placeStone(possibleState, index, false, true);
                 }
 
-                possibleState.move = i.toString() + "-" + j.toString();
+                if (placed) {
+                    possibleState.move = i.toString() + "-" + j.toString();
 
-                // Push the possible state in the list of possible states.
-                possibleStates.push(possibleState);
+                    // Push the possible state in the list of possible states.
+                    possibleStates.push(possibleState);
+                }
 
-                // console.log(possibleState.board);
             }
         }
     }

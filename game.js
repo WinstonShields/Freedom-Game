@@ -298,6 +298,18 @@ function stoneDifference(state) {
     state.value = state.blackStoneLives - state.whiteStoneLives;
 }
 
+function boardEmpty(board) {
+    for (let i = 0; i < board.length; i++) {
+        for (let j = 0; j < board[i].length; j++) {
+            if (board[i][j] != null) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
 
 /**
  * 
@@ -309,47 +321,108 @@ function stoneDifference(state) {
 function placeStone(state, index, human, copy) {
 
     // Get the row and column from the index.
-    var row = index.split('-')[0];
-    var col = index.split('-')[1];
+    var row = parseInt(index.split('-')[0]);
+    var col = parseInt(index.split('-')[1]);
+
+    var prevRow = state.previousMove[0];
+    var prevCol = state.previousMove[1];
+
+    var placed = false;
+
+    // console.log([row, col]);
 
     // Cell must be empty in order to place stone.
     if (state.board[row][col] == null) {
 
-        var stone = 0;
+        if (boardEmpty(state.board)) {
+            var stone = 0;
 
-        // If the current player is human, set the stone to 1, otherwise,
-        // set it to 0.
-        if (human) {
-            stone = 0;
+            // If the current player is human, set the stone to 1, otherwise,
+            // set it to 0.
+            if (human) {
+                stone = 0;
+            } else {
+                stone = 1;
+            }
+
+            // Set the position of the board array to the stone placed.
+            state.board[row][col] = stone;
+
+            if (!copy) {
+                // If this is the real board and not a copy, call the 
+                // display stone function.
+                displayStone(index, human);
+            }
+
+            // Count the lives of the black and white stones.
+            countLives(state, copy);
+
+            // Get the difference of the stone lives for the AI function.
+            stoneDifference(state);
+
+            // Call the game over function.
+            gameOver(state, copy);
+
+            state.previousMove = [row, col];
+
+            if (human && !copy) {
+                results = minimax(state, 3, -Infinity, Infinity, true);
+                var move = results[1];
+
+                placeStone(state, move, false, false);
+            }
+
+            placed = true;
+
         } else {
-            stone = 1;
-        }
+            if ((prevRow == row + 1 && prevCol == col) ||
+                (prevRow == row - 1 && prevCol == col) ||
+                (prevRow == row && prevCol == col + 1) ||
+                (prevRow == row && prevCol == col - 1)) {
+                var stone = 0;
 
-        // Set the position of the board array to the stone placed.
-        state.board[row][col] = stone;
+                // If the current player is human, set the stone to 1, otherwise,
+                // set it to 0.
+                if (human) {
+                    stone = 0;
+                } else {
+                    stone = 1;
+                }
 
-        if (!copy) {
-            // If this is the real board and not a copy, call the 
-            // display stone function.
-            displayStone(index, human);
-        }
+                // Set the position of the board array to the stone placed.
+                state.board[row][col] = stone;
 
-        // Count the lives of the black and white stones.
-        countLives(state, copy);
+                if (!copy) {
+                    // If this is the real board and not a copy, call the 
+                    // display stone function.
+                    displayStone(index, human);
+                }
 
-        // Get the difference of the stone lives for the AI function.
-        stoneDifference(state);
+                // Count the lives of the black and white stones.
+                countLives(state, copy);
 
-        // Call the game over function.
-        gameOver(state, copy);
+                // Get the difference of the stone lives for the AI function.
+                stoneDifference(state);
 
-        if (human && !copy) {
-            results = minimax(state, 3, -Infinity, Infinity, true);
-            var move = results[1];
+                // Call the game over function.
+                gameOver(state, copy);
 
-            placeStone(state, move, false, false);
+                state.previousMove = [row, col];
+
+                if (human && !copy) {
+                    results = minimax(state, 3, -Infinity, Infinity, true);
+                    var move = results[1];
+
+                    placeStone(state, move, false, false);
+
+                }
+
+                placed = true;
+            }
         }
     }
+
+    return placed;
 }
 
 /**

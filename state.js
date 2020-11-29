@@ -6,5 +6,6 @@ class State {
         this.terminal = false;
         this.value = 0;
         this.move = "";
+        this.previousMove = [0, 0];
     }
 }
