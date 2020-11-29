@@ -298,16 +298,58 @@ function stoneDifference(state) {
     state.value = state.blackStoneLives - state.whiteStoneLives;
 }
 
+/**
+ * 
+ * @param {array} board game state board.
+ */
 function boardEmpty(board) {
     for (let i = 0; i < board.length; i++) {
         for (let j = 0; j < board[i].length; j++) {
             if (board[i][j] != null) {
+                // If board array has an element other than null inside
+                // of it, return false.
                 return false;
             }
         }
     }
 
+    // If the array only contains null values, return true.
     return true;
+}
+
+function freedom(state) {
+    var adjacentSpots = [];
+
+    var row = state.previousMove[0];
+    var col = state.previousMove[1];
+
+    // console.log(state.previousMove);
+
+    if (row + 1 < state.board.length) {
+        adjacentSpots.push(state.board[row + 1][col]);
+    }
+
+    if (row - 1 >= 0) {
+        adjacentSpots.push(state.board[row - 1][col]);
+    }
+
+    if (col + 1 < state.board[0].length) {
+        adjacentSpots.push(state.board[row][col + 1]);
+    }
+
+    if (col - 1 >= 0) {
+        adjacentSpots.push(state.board[row][col - 1]);
+    }
+
+
+    for (let i = 0; i < adjacentSpots.length; i++) {
+        if (adjacentSpots[i] == null) {
+            return false;
+        }
+    }
+
+    return true;
+
 }
 
 
@@ -334,7 +376,7 @@ function placeStone(state, index, human, copy) {
     // Cell must be empty in order to place stone.
     if (state.board[row][col] == null) {
 
-        if (boardEmpty(state.board)) {
+        if (boardEmpty(state.board) || freedom(state)) {
             var stone = 0;
 
             // If the current player is human, set the stone to 1, otherwise,
@@ -365,13 +407,6 @@ function placeStone(state, index, human, copy) {
 
             state.previousMove = [row, col];
 
-            if (human && !copy) {
-                results = minimax(state, 3, -Infinity, Infinity, true);
-                var move = results[1];
-
-                placeStone(state, move, false, false);
-            }
-
             placed = true;
 
         } else {
@@ -379,6 +414,7 @@ function placeStone(state, index, human, copy) {
                 (prevRow == row - 1 && prevCol == col) ||
                 (prevRow == row && prevCol == col + 1) ||
                 (prevRow == row && prevCol == col - 1)) {
+
                 var stone = 0;
 
                 // If the current player is human, set the stone to 1, otherwise,
@@ -409,16 +445,17 @@ function placeStone(state, index, human, copy) {
 
                 state.previousMove = [row, col];
 
-                if (human && !copy) {
-                    results = minimax(state, 3, -Infinity, Infinity, true);
-                    var move = results[1];
-
-                    placeStone(state, move, false, false);
-
-                }
-
                 placed = true;
             }
+        }
+    }
+
+    if (placed) {
+        if (human && !copy) {
+            results = minimax(state, 3, -Infinity, Infinity, true);
+            var move = results[1];
+
+            placeStone(state, move, false, false);
         }
     }
 
