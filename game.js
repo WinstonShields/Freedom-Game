@@ -3,7 +3,8 @@ const state = new State();
 
 // Get the HTML elements.
 const status = document.getElementById('status');
-const resetButton = document.getElementById('reset');
+const displayResults = document.getElementById('results');
+
 
 /**
  * 
@@ -30,12 +31,19 @@ function gameOver(state, copy) {
             if (state.blackStoneLives > state.whiteStoneLives) {
                 console.log("Black Wins!")
                 state.value = 1;
+
+                displayResults.innerHTML = "Black Wins!";
+
             } else if (state.blackStoneLives < state.whiteStoneLives) {
                 console.log("White Wins!")
                 state.value = -1;
+
+                displayResults.innerHTML = "White Wins!";
             } else {
                 console.log("Draw")
                 state.value = 0;
+
+                displayResults.innerHTML = "Draw!";
             }
 
             // Set terminal state to true.

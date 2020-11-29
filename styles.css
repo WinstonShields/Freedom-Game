@@ -1,9 +1,16 @@
-body {
+/* body {
+    display: flex;
+    justify-content: center;
+} */
+
+.container {
     display: flex;
     justify-content: center;
 }
 
-.container {
+.game-container {
+    /* display: flex;
+    justify-content: center; */
     background-color: rgb(240, 159, 53);
     margin: 50px;
     padding: 50px;
@@ -42,4 +49,10 @@ body {
     background-color: rgb(240, 159, 53);
     height: 50px;
     width: 50px;
+}
+
+.results {
+    text-align: center;
+    margin: 20px;
+    border-radius: 25px;
 }
