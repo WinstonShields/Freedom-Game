@@ -1,6 +1,6 @@
 class State {
     constructor() {
-        this.board = Array(6).fill().map(() => Array(6).fill(null));
+        this.board = Array(8).fill().map(() => Array(8).fill(null));
         this.blackStoneLives = 0;
         this.whiteStoneLives = 0;
         this.terminal = false;
