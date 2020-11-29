@@ -202,7 +202,7 @@ function countInvertedDiagonal(state, i, j, counter, blackCount, whiteCount, bla
 
         if (state.board[i + counter][start - j] == 0) {
             whiteCount2 += 1;
-            whiteCount2 = 0;
+            blackCount2 = 0;
         }
 
         if (blackCount2 == 4) {
