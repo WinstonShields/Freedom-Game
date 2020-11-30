@@ -56,6 +56,12 @@ function gameOver(state, copy) {
 }
 
 function countHorizontal(state, i, j, blackCount, whiteCount) {
+
+    if (state.board[i][j] == null) {
+        blackCount = 0;
+        whiteCount = 0;
+    }
+
     if (state.board[i][j] == 1) {
         // Count horizontal black stones. Reset white
         // stone counter.
@@ -88,6 +94,12 @@ function countHorizontal(state, i, j, blackCount, whiteCount) {
 }
 
 function countVertical(state, i, j, blackCount, whiteCount) {
+
+    if (state.board[i][j] == null) {
+        blackCount = 0;
+        whiteCount = 0;
+    }
+
     if (state.board[j][i] == 1) {
         // Count vertical black stones. Reset white
         // stone counter.
@@ -140,6 +152,11 @@ function countDiagonal(state, i, j, counter, blackCount, whiteCount, blackCount2
             whiteCount += 1;
             blackCount = 0;
         }
+
+        if (state.board[i + counter][j] == null) {
+            blackCount = 0;
+            whiteCount = 0;
+        }
     }
 
     if (blackCount == 4) {
@@ -162,6 +179,11 @@ function countDiagonal(state, i, j, counter, blackCount, whiteCount, blackCount2
             whiteCount2 += 1;
             blackCount2 = 0;
         }
+
+        if (state.board[j][i + counter] == null) {
+            blackCount2 = 0;
+            whiteCount2 = 0;
+        }
     }
 
     if (blackCount2 == 4) {
@@ -178,6 +200,11 @@ function countDiagonal(state, i, j, counter, blackCount, whiteCount, blackCount2
 }
 
 function countInvertedDiagonal(state, i, j, counter, blackCount, whiteCount, blackCount2, whiteCount2) {
+
+    if (state.board[j][i - counter] == null) {
+        blackCount = 0;
+        whiteCount = 0;
+    }
 
     if (state.board[j][i - counter] == 1) {
         blackCount += 1;
@@ -203,6 +230,13 @@ function countInvertedDiagonal(state, i, j, counter, blackCount, whiteCount, bla
     var start = state.board.length - 1;
 
     if (i + counter < state.board.length && i != 0) {
+
+        if (state.board[i + counter][start - j] == null) {
+            blackCount2 = 0;
+            whiteCount2 = 0;
+        }
+
+
         if (state.board[i + counter][start - j] == 1) {
             blackCount2 += 1;
             whiteCount2 = 0;
@@ -395,14 +429,14 @@ function placeStone(state, index, human, copy) {
                 stone = 1;
             }
 
-            // Set the position of the board array to the stone placed.
-            state.board[row][col] = stone;
-
             if (!copy) {
                 // If this is the real board and not a copy, call the 
                 // display stone function.
-                displayStone(index, human);
+                displayStone(index, human, state);
             }
+
+            // Set the position of the board array to the stone placed.
+            state.board[row][col] = stone;
 
             // Count the lives of the black and white stones.
             countLives(state, copy);
@@ -433,14 +467,14 @@ function placeStone(state, index, human, copy) {
                     stone = 1;
                 }
 
-                // Set the position of the board array to the stone placed.
-                state.board[row][col] = stone;
-
                 if (!copy) {
                     // If this is the real board and not a copy, call the 
                     // display stone function.
-                    displayStone(index, human);
+                    displayStone(index, human, state);
                 }
+
+                // Set the position of the board array to the stone placed.
+                state.board[row][col] = stone;
 
                 // Count the lives of the black and white stones.
                 countLives(state, copy);
@@ -476,7 +510,7 @@ function placeStone(state, index, human, copy) {
  * @param {boolean} human boolean representation of who placed the stone.
  * True represents the human player, and false represents the AI.
  */
-function displayStone(index, human) {
+function displayStone(index, human, state) {
     var img = document.getElementById(index + '-img');
 
     var stoneImg = new Image;
@@ -485,11 +519,34 @@ function displayStone(index, human) {
         img.src = this.src;
     }
 
+    var prevRow = state.previousMove[0];
+    var prevCol = state.previousMove[1];
+
+    var previousMoveStr = prevRow.toString() + "-" + prevCol.toString();
+
+    var img2 = document.getElementById(previousMoveStr + '-img');
+
+    var prevStoneImg = new Image;
+
+    prevStoneImg.onload = function() {
+        img2.src = this.src;
+    }
+
     // If the current player is human, load the black stone, otherwise,
     // load the white stone.
     if (human) {
-        stoneImg.src = "images/white_stone.jpg";
+        stoneImg.src = "images/white_stone_previous.jpg";
+
     } else {
-        stoneImg.src = "images/black_stone.jpg";
+        stoneImg.src = "images/black_stone_previous.jpg";
     }
+
+    if (state.board[prevRow][prevCol] == 0) {
+        prevStoneImg.src = "images/white_stone.jpg";
+    }
+
+    if (state.board[prevRow][prevCol] == 1) {
+        prevStoneImg.src = "images/black_stone.jpg";
+    }
+
 }
