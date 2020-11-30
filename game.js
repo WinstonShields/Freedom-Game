@@ -535,14 +535,10 @@ function displayStone(index, human, state) {
     // If the current player is human, load the black stone, otherwise,
     // load the white stone.
     if (human) {
-        stoneImg.src = "images/white_stone_previous.jpg";
+        stoneImg.src = "images/white_stone.jpg";
 
     } else {
         stoneImg.src = "images/black_stone_previous.jpg";
-    }
-
-    if (state.board[prevRow][prevCol] == 0) {
-        prevStoneImg.src = "images/white_stone.jpg";
     }
 
     if (state.board[prevRow][prevCol] == 1) {
