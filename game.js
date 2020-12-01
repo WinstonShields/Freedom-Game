@@ -351,6 +351,9 @@ function countLives(state, copy) {
 }
 
 /**
+ * To get a heuristic for the optimal move for the AI, subtract the total white stone
+ * lives from the total black stone lives. This value will be used and evaluated in 
+ * the minimax algorithm.
  * 
  * @param {State} state game state.
  */
