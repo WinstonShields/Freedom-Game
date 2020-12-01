@@ -9,12 +9,14 @@ const displayResults = document.getElementById('results');
 /**
  * 
  * @param {State} state the game state.
+ * @param {boolean} copy truth value for whether the state is a copy or the main state.
  */
 function gameOver(state, copy) {
 
     if (!copy) {
         var count = 0;
 
+        // Count the number of pieces on the board.
         for (let i = 0; i < state.board.length; i++) {
             for (let j = 0; j < state.board[i].length; j++) {
                 if (state.board[i][j] != null) {
@@ -143,6 +145,7 @@ function countVertical(state, i, j, blackCount, whiteCount) {
  * @param {*} whiteCount2 number of white stones in column to column traversal.
  */
 function countDiagonal(state, i, j, counter, blackCount, whiteCount, blackCount2, whiteCount2) {
+    // Count diagonals that are traversed row to row.
     if (i + counter < state.board.length) {
         if (state.board[i + counter][j] == 1) {
             blackCount += 1;
@@ -159,6 +162,7 @@ function countDiagonal(state, i, j, counter, blackCount, whiteCount, blackCount2
         }
     }
 
+    // If there are four of the stones, increment by 1.
     if (blackCount == 4) {
         state.blackStoneLives += 1;
         blackCount = 0;
@@ -169,6 +173,7 @@ function countDiagonal(state, i, j, counter, blackCount, whiteCount, blackCount2
         whiteCount = 0;
     }
 
+    // Count diagonals that are traversed column to column.
     if (i + counter < state.board.length && i != 0) {
         if (state.board[j][i + counter] == 1) {
             blackCount2 += 1;
@@ -186,6 +191,7 @@ function countDiagonal(state, i, j, counter, blackCount, whiteCount, blackCount2
         }
     }
 
+    // If there four stones, increment by 1.
     if (blackCount2 == 4) {
         state.blackStoneLives += 1;
         blackCount2 = 0;
@@ -199,8 +205,20 @@ function countDiagonal(state, i, j, counter, blackCount, whiteCount, blackCount2
     return [blackCount, whiteCount, blackCount2, whiteCount2]
 }
 
+/**
+ * 
+ * @param {State} state state of the game.
+ * @param {int} i outer loop iterator.
+ * @param {int} j inner loop iterator.
+ * @param {int} counter incrementer for making the traverse diagonal.
+ * @param {int} blackCount number of black stones in column to column traversal.
+ * @param {int} whiteCount number of white stones in column to column traversal.
+ * @param {int} blackCount2 number of black stones in row to row traversal.
+ * @param {*} whiteCount2 number of white stones in row to row traversal.
+ */
 function countInvertedDiagonal(state, i, j, counter, blackCount, whiteCount, blackCount2, whiteCount2) {
 
+    // Count number of stones in column to column traversal.
     if (state.board[j][i - counter] == null) {
         blackCount = 0;
         whiteCount = 0;
@@ -231,6 +249,7 @@ function countInvertedDiagonal(state, i, j, counter, blackCount, whiteCount, bla
 
     if (i + counter < state.board.length && i != 0) {
 
+        // Count number of stones in row to row traversal.
         if (state.board[i + counter][start - j] == null) {
             blackCount2 = 0;
             whiteCount2 = 0;
@@ -265,6 +284,7 @@ function countInvertedDiagonal(state, i, j, counter, blackCount, whiteCount, bla
 /**
  * 
  * @param {State} state the game state.
+ * @param {boolean} copy truth value on whether the state is a copy or not.
  */
 function countLives(state, copy) {
 
@@ -359,37 +379,52 @@ function boardEmpty(board) {
     return true;
 }
 
+/**
+ * 
+ * @param {State} state current game state.
+ */
 function freedom(state) {
     var adjacentSpots = [];
 
     var row = state.previousMove[0];
     var col = state.previousMove[1];
 
-    // console.log(state.previousMove);
-
     if (row + 1 < state.board.length) {
+        // If there is a stone one row under the previous placed stone,
+        // add it to the adjacent spots array.
+
         adjacentSpots.push(state.board[row + 1][col]);
     }
 
     if (row - 1 >= 0) {
+        // If there is a stone one row above the previous placed stone,
+        // add it to the adjacent spots array.
         adjacentSpots.push(state.board[row - 1][col]);
     }
 
     if (col + 1 < state.board[0].length) {
+        // If there is a stone one column to the right to the
+        // previous placed stone, add it to the adjacent spots array.
         adjacentSpots.push(state.board[row][col + 1]);
     }
 
     if (col - 1 >= 0) {
+        // If there is a stone one column to the left to the
+        // previous placed stone, add it to the adjacent spots array.
         adjacentSpots.push(state.board[row][col - 1]);
     }
 
 
     for (let i = 0; i < adjacentSpots.length; i++) {
         if (adjacentSpots[i] == null) {
+            // If any of the adjacent spots are null (free), the freedom
+            // rule will not be in effect.
             return false;
         }
     }
 
+    // If none of the adjacent spots were null, return true to enable
+    // the freedom rule.
     return true;
 
 }
@@ -418,6 +453,8 @@ function placeStone(state, index, human, copy) {
     // Cell must be empty in order to place stone.
     if (state.board[row][col] == null) {
 
+        // If the board is empty, or if the freedom function returns true,
+        // a stone can be placed on any empty spot of the board.
         if (boardEmpty(state.board) || freedom(state)) {
             var stone = 0;
 
@@ -452,6 +489,8 @@ function placeStone(state, index, human, copy) {
             placed = true;
 
         } else {
+            // If the board isn't empty, a stone can only be placed on empty spots
+            // adjacent to the previously placed stone.
             if ((prevRow == row + 1 && prevCol == col) ||
                 (prevRow == row - 1 && prevCol == col) ||
                 (prevRow == row && prevCol == col + 1) ||
@@ -494,9 +533,12 @@ function placeStone(state, index, human, copy) {
 
     if (placed) {
         if (human && !copy) {
+            // If the player was human and the board is not a copy, retrieve the
+            // optimal move for the AI player with minimax.
             results = minimax(state, 3, -Infinity, Infinity, true);
             var move = results[1];
 
+            // Call place stone function for the AI player with the optimal move.
             placeStone(state, move, false, false);
         }
     }
