@@ -8,6 +8,9 @@ an optimized AI playing as the black stone.
 ## Dependencies
 A browser such as Google Chrome, Firefox, or Microsoft Edge with JavaScript enabled.
 
+Make sure that if your content is contained in a zip file, that you extract all the content,
+or the game may not run or display correctly.
+
 ## Rules
 The white stone player will have the first move. A stone can be placed on any spot
 on the board in the first move. After this, each player takes turns and can place 
@@ -22,9 +25,6 @@ The game is over when all spots on the board are completely filled with
 stones or if the last player opts to not place a stone on the board.
 
 ## How to Play
-Make sure that if your content is contained in a zip file, that you extract all the content,
-or the game may not run or display correctly.
-
 Open up index.html, and click on an empty spot on the board. The score is shown to the top left
 under the game title, while the reset button is shown on the top right under the game title.
 The left score is the number of white stone lives, while the number on the right is the 
