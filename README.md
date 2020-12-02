@@ -22,4 +22,5 @@ The game is over when all spots on the board are completely filled with
 stones or if the last player opts to not place a stone on the board.
 
 ## How to Play
-Open up index.html, and click on an empty spot on the board.
+Open up index.html, and click on an empty spot on the board. The white stone lives are
+displayed to the left, while the black stone lives are displayed to the right.
