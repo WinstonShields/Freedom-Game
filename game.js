@@ -6,6 +6,21 @@ const status = document.getElementById('status');
 const displayResults = document.getElementById('results');
 
 
+function countStones(state) {
+    var numberOfStones = 0;
+
+    // Count the number of pieces on the board.
+    for (let i = 0; i < state.board.length; i++) {
+        for (let j = 0; j < state.board[i].length; j++) {
+            if (state.board[i][j] != null) {
+                numberOfStones += 1;
+            }
+        }
+    }
+
+    return numberOfStones;
+}
+
 /**
  * 
  * @param {State} state the game state.
@@ -14,20 +29,8 @@ const displayResults = document.getElementById('results');
 function gameOver(state, copy) {
 
     if (!copy) {
-        var count = 0;
 
-        // Count the number of pieces on the board.
-        for (let i = 0; i < state.board.length; i++) {
-            for (let j = 0; j < state.board[i].length; j++) {
-                if (state.board[i][j] != null) {
-                    count += 1;
-                }
-            }
-        }
-
-        var totalCells = state.board.length * state.board[0].length;
-
-        if (count == totalCells) {
+        if (state.terminal) {
             // If the stones fill up all of the spots on the board, check
             // for the winner.
             if (state.blackStoneLives > state.whiteStoneLives) {
@@ -48,12 +51,10 @@ function gameOver(state, copy) {
                 displayResults.innerHTML = "Draw!";
             }
 
-            // Set terminal state to true.
-            state.terminal = true;
-
             console.log("Black", state.blackStoneLives);
             console.log("White", state.whiteStoneLives);
         }
+
     }
 }
 
@@ -661,6 +662,15 @@ function placeStone(state, index, human, copy) {
             placeStone(state, move, false, false);
         }
     }
+
+    if (countStones(state) == state.numberOfSpots) {
+        // If the number of stones is equal to the number of spots on the board,
+        // set the terminal state to true.
+        state.terminal = true;
+    }
+
+    // Check if the game is over.
+    gameOver(state, copy);
 
     return placed;
 }
