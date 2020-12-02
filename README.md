@@ -5,6 +5,9 @@ an optimized AI playing as the black stone.
 
 <a href="https://boardgamegeek.com/boardgame/100480/freedom"> Original Game </a>
 
+## Dependencies
+A browser such as Google Chrome, Firefox, or Microsoft Edge with JavaScript enabled.
+
 ## Rules
 The white stone player will have the first move. A stone can be placed on any spot
 on the board in the first move. After this, each player takes turns and can place 
@@ -17,3 +20,6 @@ are a set of exactly four stones of the same color in a row either, horizontally
 or diagonally. If a set of four stones in a row increases to five or more stones, the life is removed.
 The game is over when all spots on the board are completely filled with
 stones or if the last player opts to not place a stone on the board.
+
+## How to Play
+Open up index.html, and click on an empty spot on the board.
