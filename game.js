@@ -57,11 +57,14 @@ function gameOver(state, copy) {
     }
 }
 
-function countHorizontal(state, i, j, blackCount, whiteCount) {
+
+function countHorizontal(state, i, j, blackCount, whiteCount, stopSubBlack, stopSubWhite) {
 
     if (state.board[i][j] == null) {
         blackCount = 0;
         whiteCount = 0;
+        stopSubBlack = false;
+        stopSubWhite = false;
     }
 
     if (state.board[i][j] == 1) {
@@ -69,6 +72,7 @@ function countHorizontal(state, i, j, blackCount, whiteCount) {
         // stone counter.
         blackCount += 1;
         whiteCount = 0;
+        stopSubWhite = false;
     }
 
     if (state.board[i][j] == 0) {
@@ -76,30 +80,43 @@ function countHorizontal(state, i, j, blackCount, whiteCount) {
         // stone counter.
         whiteCount += 1;
         blackCount = 0;
+        stopSubBlack = false;
     }
 
     if (blackCount == 4) {
         // If there are 4 horizontal black stones, add a black
         // stone life and reset black stone counter.
         state.blackStoneLives += 1;
-        blackCount = 0;
+    }
+
+    if (blackCount > 4 && !stopSubBlack) {
+        // Remove life it the row of stones is greater than 4.
+        state.blackStoneLives = state.blackStoneLives - 1;
+        stopSubBlack = true;
     }
 
     if (whiteCount == 4) {
         // If there are 4 horizontal white stones, add a white
         // stone life and reset white stone counter.
         state.whiteStoneLives += 1;
-        whiteCount = 0;
     }
 
-    return [blackCount, whiteCount];
+    if (whiteCount > 4 && !stopSubWhite) {
+        // Remove life it the row of stones is greater than 4.
+        state.whiteStoneLives = state.whiteStoneLives - 1;
+        stopSubWhite = true;
+    }
+
+    return [blackCount, whiteCount, stopSubBlack, stopSubWhite];
 }
 
-function countVertical(state, i, j, blackCount, whiteCount) {
+function countVertical(state, i, j, blackCount, whiteCount, stopSubBlack, stopSubWhite) {
 
-    if (state.board[i][j] == null) {
+    if (state.board[j][i] == null) {
         blackCount = 0;
         whiteCount = 0;
+        stopSubBlack = false;
+        stopSubWhite = false;
     }
 
     if (state.board[j][i] == 1) {
@@ -107,6 +124,7 @@ function countVertical(state, i, j, blackCount, whiteCount) {
         // stone counter.
         blackCount += 1;
         whiteCount = 0;
+        stopSubWhite = false;
     }
 
     if (state.board[j][i] == 0) {
@@ -114,23 +132,34 @@ function countVertical(state, i, j, blackCount, whiteCount) {
         // stone counter.
         whiteCount += 1;
         blackCount = 0;
+        stopSubBlack = false;
     }
 
     if (blackCount == 4) {
         // If there are 4 vertical black stones, add a black
         // stone life and reset black stone counter.
         state.blackStoneLives += 1;
-        blackCount = 0;
+    }
+
+    if (blackCount > 4 && !stopSubBlack) {
+        // Remove life it the row of stones is greater than 4.
+        state.blackStoneLives = state.blackStoneLives - 1;
+        stopSubBlack = true;
     }
 
     if (whiteCount == 4) {
         // If there are 4 vertical white stones, add a white
         // stone life and reset white stone counter.
         state.whiteStoneLives += 1;
-        whiteCount = 0;
     }
 
-    return [blackCount, whiteCount];
+    if (whiteCount > 4 && !stopSubWhite) {
+        // Remove life it the row of stones is greater than 4.
+        state.whiteStoneLives = state.whiteStoneLives - 1;
+        stopSubWhite = true;
+    }
+
+    return [blackCount, whiteCount, stopSubBlack, stopSubWhite];
 }
 
 /**
@@ -142,67 +171,97 @@ function countVertical(state, i, j, blackCount, whiteCount) {
  * @param {int} blackCount number of black stones in row to row traversal.
  * @param {int} whiteCount number of white stones in row to row traversal.
  * @param {int} blackCount2 number of black stones in column to column traversal.
- * @param {*} whiteCount2 number of white stones in column to column traversal.
+ * @param {int} whiteCount2 number of white stones in column to column traversal.
  */
-function countDiagonal(state, i, j, counter, blackCount, whiteCount, blackCount2, whiteCount2) {
+function countDiagonal(state, i, j, counter, blackCount, whiteCount, blackCount2, whiteCount2, stopSubBlack, stopSubWhite, stopSubBlack2, stopSubWhite2) {
     // Count diagonals that are traversed row to row.
     if (i + counter < state.board.length) {
-        if (state.board[i + counter][j] == 1) {
-            blackCount += 1;
-            whiteCount = 0;
-        }
-        if (state.board[i + counter][j] == 0) {
-            whiteCount += 1;
-            blackCount = 0;
-        }
-
         if (state.board[i + counter][j] == null) {
             blackCount = 0;
             whiteCount = 0;
+            stopSubBlack = false;
+            stopSubWhite = false;
+        }
+
+        if (state.board[i + counter][j] == 1) {
+            blackCount += 1;
+            whiteCount = 0;
+            stopSubWhite = false;
+        }
+
+        if (state.board[i + counter][j] == 0) {
+            whiteCount += 1;
+            blackCount = 0;
+            stopSubBlack = false;
+        }
+
+        // If there are four of the stones, increment by 1.
+        if (blackCount == 4) {
+            state.blackStoneLives += 1;
+        }
+
+        if (blackCount > 4 && !stopSubBlack) {
+            // Remove life it the row of stones is greater than 4.
+            state.blackStoneLives = state.blackStoneLives - 1;
+            stopSubBlack = true;
+        }
+
+        if (whiteCount == 4) {
+            state.whiteStoneLives += 1;
+        }
+
+        if (whiteCount > 4 && !stopSubWhite) {
+            // Remove life it the row of stones is greater than 4.
+            state.whiteStoneLives = state.whiteStoneLives - 1;
+            stopSubWhite = true;
         }
     }
 
-    // If there are four of the stones, increment by 1.
-    if (blackCount == 4) {
-        state.blackStoneLives += 1;
-        blackCount = 0;
-    }
-
-    if (whiteCount == 4) {
-        state.whiteStoneLives += 1;
-        whiteCount = 0;
-    }
 
     // Count diagonals that are traversed column to column.
     if (i + counter < state.board.length && i != 0) {
+        if (state.board[j][i + counter] == null) {
+            blackCount2 = 0;
+            whiteCount2 = 0;
+            stopSubBlack2 = false;
+            stopSubWhite2 = false;
+        }
+
         if (state.board[j][i + counter] == 1) {
             blackCount2 += 1;
             whiteCount2 = 0;
+            stopSubWhite2 = false;
         }
 
         if (state.board[j][i + counter] == 0) {
             whiteCount2 += 1;
             blackCount2 = 0;
+            stopSubBlack2 = false;
         }
 
-        if (state.board[j][i + counter] == null) {
-            blackCount2 = 0;
-            whiteCount2 = 0;
+        // If there four stones, increment by 1.
+        if (blackCount2 == 4) {
+            state.blackStoneLives += 1;
+        }
+
+        if (blackCount2 > 4 && !stopSubBlack2) {
+            // Remove life it the row of stones is greater than 4.
+            state.blackStoneLives = state.blackStoneLives - 1;
+            stopSubBlack2 = true;
+        }
+
+        if (whiteCount2 == 4) {
+            state.whiteStoneLives += 1;
+        }
+
+        if (whiteCount2 > 4 && !stopSubWhite2) {
+            // Remove life it the row of stones is greater than 4.
+            state.whiteStoneLives = state.whiteStoneLives - 1;
+            stopSubWhite2 = true;
         }
     }
 
-    // If there four stones, increment by 1.
-    if (blackCount2 == 4) {
-        state.blackStoneLives += 1;
-        blackCount2 = 0;
-    }
-
-    if (whiteCount2 == 4) {
-        state.whiteStoneLives += 1;
-        whiteCount2 = 0;
-    }
-
-    return [blackCount, whiteCount, blackCount2, whiteCount2]
+    return [blackCount, whiteCount, blackCount2, whiteCount2, stopSubBlack, stopSubWhite, stopSubBlack2, stopSubWhite2]
 }
 
 /**
@@ -216,33 +275,46 @@ function countDiagonal(state, i, j, counter, blackCount, whiteCount, blackCount2
  * @param {int} blackCount2 number of black stones in row to row traversal.
  * @param {*} whiteCount2 number of white stones in row to row traversal.
  */
-function countInvertedDiagonal(state, i, j, counter, blackCount, whiteCount, blackCount2, whiteCount2) {
+function countInvertedDiagonal(state, i, j, counter, blackCount, whiteCount, blackCount2, whiteCount2, stopSubBlack, stopSubWhite, stopSubBlack2, stopSubWhite2) {
 
     // Count number of stones in column to column traversal.
     if (state.board[j][i - counter] == null) {
         blackCount = 0;
         whiteCount = 0;
+        stopSubBlack = false;
+        stopSubWhite = false;
     }
 
     if (state.board[j][i - counter] == 1) {
         blackCount += 1;
         whiteCount = 0;
+        stopSubWhite = false;
     }
 
     if (state.board[j][i - counter] == 0) {
         whiteCount += 1;
         blackCount = 0;
+        stopSubBlack = false;
     }
-
 
     if (blackCount == 4) {
         state.blackStoneLives += 1;
-        blackCount = 0;
+    }
+
+    if (blackCount > 4 && !stopSubBlack) {
+        // Remove life it the row of stones is greater than 4.
+        state.blackStoneLives = state.blackStoneLives - 1;
+        stopSubBlack = true;
     }
 
     if (whiteCount == 4) {
         state.whiteStoneLives += 1;
-        whiteCount = 0;
+    }
+
+    if (whiteCount > 4 && !stopSubWhite) {
+        // Remove life it the row of stones is greater than 4.
+        state.whiteStoneLives = state.whiteStoneLives - 1;
+        stopSubWhite = true;
     }
 
     var start = state.board.length - 1;
@@ -253,32 +325,45 @@ function countInvertedDiagonal(state, i, j, counter, blackCount, whiteCount, bla
         if (state.board[i + counter][start - j] == null) {
             blackCount2 = 0;
             whiteCount2 = 0;
+            stopSubBlack2 = false;
+            stopSubWhite2 = false;
         }
-
 
         if (state.board[i + counter][start - j] == 1) {
             blackCount2 += 1;
             whiteCount2 = 0;
+            stopSubWhite2 = false;
         }
 
         if (state.board[i + counter][start - j] == 0) {
             whiteCount2 += 1;
             blackCount2 = 0;
+            stopSubBlack2 = false;
         }
 
         if (blackCount2 == 4) {
             state.blackStoneLives += 1;
-            blackCount2 = 0;
+        }
+
+        if (blackCount2 > 4 && !stopSubBlack2) {
+            // Remove life it the row of stones is greater than 4.
+            state.blackStoneLives = state.blackStoneLives - 1;
+            stopSubBlack2 = true;
         }
 
         if (whiteCount2 == 4) {
             state.whiteStoneLives += 1;
-            whiteCount2 = 0;
+        }
+
+        if (whiteCount2 > 4 && !stopSubWhite2) {
+            // Remove life it the row of stones is greater than 4.
+            state.whiteStoneLives = state.whiteStoneLives - 1;
+            stopSubWhite2 = true;
         }
     }
 
 
-    return [blackCount, whiteCount, blackCount2, whiteCount2]
+    return [blackCount, whiteCount, blackCount2, whiteCount2, stopSubBlack, stopSubWhite, stopSubBlack2, stopSubWhite2]
 }
 
 /**
@@ -312,33 +397,66 @@ function countLives(state, copy) {
 
         let counter = 0;
 
+        var horizontalBlackStop = false;
+        var horizontalWhiteStop = false;
+
+        var verticalBlackStop = false;
+        var verticalWhiteStop = false;
+
+        var diagonalBlackStop = false;
+        var diagonalWhiteStop = false;
+
+        var diagonalBlackStop2 = false;
+        var diagonalWhiteStop2 = false;
+
+        var invertedDiagonalBlackStop = false;
+        var invertedDiagonalWhiteStop = false;
+
+        var invertedDiagonalBlackStop2 = false;
+        var invertedDiagonalWhiteStop2 = false;
+
         for (let j = 0; j < state.board[i].length; j++) {
 
             // Count the horizontal stones.
-            var horizontalCounts = countHorizontal(state, i, j, horizontalBlackCount, horizontalWhiteCount);
+            var horizontalCounts = countHorizontal(state, i, j, horizontalBlackCount, horizontalWhiteCount, horizontalBlackStop, horizontalWhiteStop);
             horizontalBlackCount = horizontalCounts[0];
             horizontalWhiteCount = horizontalCounts[1];
+            horizontalBlackStop = horizontalCounts[2];
+            horizontalWhiteStop = horizontalCounts[3];
 
             // Count the vertical stones.
-            var verticalCounts = countVertical(state, i, j, verticalBlackCount, verticalWhiteCount);
+            var verticalCounts = countVertical(state, i, j, verticalBlackCount, verticalWhiteCount, verticalBlackStop, verticalWhiteStop);
             verticalBlackCount = verticalCounts[0];
             verticalWhiteCount = verticalCounts[1];
+            verticalBlackStop = verticalCounts[2];
+            verticalWhiteStop = verticalCounts[3];
 
             // Count the diagonal stones.
             var diagonalCounts = countDiagonal(state, i, j, counter, diagonalBlackCount,
-                diagonalWhiteCount, diagonalBlackCount2, diagonalWhiteCount2);
+                diagonalWhiteCount, diagonalBlackCount2, diagonalWhiteCount2, diagonalBlackStop, diagonalWhiteStop,
+                diagonalBlackStop2, diagonalWhiteStop2);
             diagonalBlackCount = diagonalCounts[0];
             diagonalWhiteCount = diagonalCounts[1];
             diagonalBlackCount2 = diagonalCounts[2];
             diagonalWhiteCount2 = diagonalCounts[3];
+            diagonalBlackStop = diagonalCounts[4];
+            diagonalWhiteStop = diagonalCounts[5];
+            diagonalBlackStop2 = diagonalCounts[6];
+            diagonalWhiteStop2 = diagonalCounts[7];
 
             // Count the inverted diagonal stones.
             var invertedDiagonalCounts = countInvertedDiagonal(state, i, j, counter, invertedDiagonalBlackCount,
-                invertedDiagonalWhiteCount, invertedDiagonalBlackCount2, invertedDiagonalWhiteCount2);
+                invertedDiagonalWhiteCount, invertedDiagonalBlackCount2, invertedDiagonalWhiteCount2,
+                invertedDiagonalBlackStop, invertedDiagonalWhiteStop, invertedDiagonalBlackStop2,
+                invertedDiagonalWhiteStop2);
             invertedDiagonalBlackCount = invertedDiagonalCounts[0];
             invertedDiagonalWhiteCount = invertedDiagonalCounts[1];
             invertedDiagonalBlackCount2 = invertedDiagonalCounts[2];
             invertedDiagonalWhiteCount2 = invertedDiagonalCounts[3];
+            invertedDiagonalBlackStop = invertedDiagonalCounts[4];
+            invertedDiagonalWhiteStop = invertedDiagonalCounts[5];
+            invertedDiagonalBlackStop2 = invertedDiagonalCounts[6];
+            invertedDiagonalWhiteStop2 = invertedDiagonalCounts[7];
 
             counter++;
 
@@ -450,8 +568,6 @@ function placeStone(state, index, human, copy) {
     var prevCol = state.previousMove[1];
 
     var placed = false;
-
-    // console.log([row, col]);
 
     // Cell must be empty in order to place stone.
     if (state.board[row][col] == null) {
