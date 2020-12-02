@@ -5,7 +5,10 @@ const state = new State();
 const status = document.getElementById('status');
 const displayResults = document.getElementById('results');
 
-
+/**
+ * 
+ * @param {State} state current game state.
+ */
 function countStones(state) {
     var numberOfStones = 0;
 
@@ -561,61 +564,29 @@ function freedom(state) {
  */
 function placeStone(state, index, human, copy) {
 
-    // Get the row and column from the index.
-    var row = parseInt(index.split('-')[0]);
-    var col = parseInt(index.split('-')[1]);
+    if (countStones(state) == state.numberOfSpots - 1 && index == "") {
+        // If board is completely filled except for one spot, and index
+        // is set to empty string (user doesn't place a stone), set the
+        // game to terminal.
+        state.terminal = true;
+    } else {
 
-    var prevRow = state.previousMove[0];
-    var prevCol = state.previousMove[1];
+        // Get the row and column from the index.
+        var row = parseInt(index.split('-')[0]);
+        var col = parseInt(index.split('-')[1]);
 
-    var placed = false;
+        var prevRow = state.previousMove[0];
+        var prevCol = state.previousMove[1];
 
-    // Cell must be empty in order to place stone.
-    if (state.board[row][col] == null) {
+        var placed = false;
 
-        // If the board is empty, or if the freedom function returns true,
-        // a stone can be placed on any empty spot of the board.
-        if (boardEmpty(state.board) || freedom(state)) {
-            var stone = 0;
+        // Cell must be empty and game must not be in terminal state
+        // in order to place stone.
+        if (!state.terminal && state.board[row][col] == null) {
 
-            // If the current player is human, set the stone to 1, otherwise,
-            // set it to 0.
-            if (human) {
-                stone = 0;
-            } else {
-                stone = 1;
-            }
-
-            if (!copy) {
-                // If this is the real board and not a copy, call the 
-                // display stone function.
-                displayStone(index, human, state);
-            }
-
-            // Set the position of the board array to the stone placed.
-            state.board[row][col] = stone;
-
-            // Count the lives of the black and white stones.
-            countLives(state, copy);
-
-            // Get the difference of the stone lives for the AI function.
-            stoneDifference(state);
-
-            // Call the game over function.
-            gameOver(state, copy);
-
-            state.previousMove = [row, col];
-
-            placed = true;
-
-        } else {
-            // If the board isn't empty, a stone can only be placed on empty spots
-            // adjacent to the previously placed stone.
-            if ((prevRow == row + 1 && prevCol == col) ||
-                (prevRow == row - 1 && prevCol == col) ||
-                (prevRow == row && prevCol == col + 1) ||
-                (prevRow == row && prevCol == col - 1)) {
-
+            // If the board is empty, or if the freedom function returns true,
+            // a stone can be placed on any empty spot of the board.
+            if (boardEmpty(state.board) || freedom(state)) {
                 var stone = 0;
 
                 // If the current player is human, set the stone to 1, otherwise,
@@ -641,32 +612,67 @@ function placeStone(state, index, human, copy) {
                 // Get the difference of the stone lives for the AI function.
                 stoneDifference(state);
 
-                // Call the game over function.
-                gameOver(state, copy);
-
                 state.previousMove = [row, col];
 
                 placed = true;
+
+            } else {
+                // If the board isn't empty, a stone can only be placed on empty spots
+                // adjacent to the previously placed stone.
+                if ((prevRow == row + 1 && prevCol == col) ||
+                    (prevRow == row - 1 && prevCol == col) ||
+                    (prevRow == row && prevCol == col + 1) ||
+                    (prevRow == row && prevCol == col - 1)) {
+
+                    var stone = 0;
+
+                    // If the current player is human, set the stone to 1, otherwise,
+                    // set it to 0.
+                    if (human) {
+                        stone = 0;
+                    } else {
+                        stone = 1;
+                    }
+
+                    if (!copy) {
+                        // If this is the real board and not a copy, call the 
+                        // display stone function.
+                        displayStone(index, human, state);
+                    }
+
+                    // Set the position of the board array to the stone placed.
+                    state.board[row][col] = stone;
+
+                    // Count the lives of the black and white stones.
+                    countLives(state, copy);
+
+                    // Get the difference of the stone lives for the AI function.
+                    stoneDifference(state);
+
+                    state.previousMove = [row, col];
+
+                    placed = true;
+                }
             }
         }
-    }
 
-    if (placed) {
-        if (human && !copy) {
-            // If the player was human and the board is not a copy, retrieve the
-            // optimal move for the AI player with minimax.
-            results = minimax(state, 3, -Infinity, Infinity, true);
-            var move = results[1];
+        if (placed) {
+            if (human && !copy) {
+                // If the player was human and the board is not a copy, retrieve the
+                // optimal move for the AI player with minimax.
+                results = minimax(state, 3, -Infinity, Infinity, true);
+                var move = results[1];
 
-            // Call place stone function for the AI player with the optimal move.
-            placeStone(state, move, false, false);
+                // Call place stone function for the AI player with the optimal move.
+                placeStone(state, move, false, false);
+            }
         }
-    }
 
-    if (countStones(state) == state.numberOfSpots) {
-        // If the number of stones is equal to the number of spots on the board,
-        // set the terminal state to true.
-        state.terminal = true;
+        if (countStones(state) == state.numberOfSpots) {
+            // If the number of stones is equal to the number of spots on the board,
+            // set the terminal state to true.
+            state.terminal = true;
+        }
     }
 
     // Check if the game is over.

@@ -13,6 +13,7 @@ function getPossibleStates(state, human) {
                 // If the state's cell is empty, create a deepcopy
                 // of the state.
                 var possibleState = JSON.parse(JSON.stringify(state));
+                var possibleState2 = JSON.parse(JSON.stringify(state));
 
                 // Create a string out of the current index.
                 var index = i.toString() + '-' + j.toString();
@@ -25,6 +26,19 @@ function getPossibleStates(state, human) {
                 } else {
                     // Place a white stone in the empty index.
                     placed = placeStone(possibleState, index, false, true);
+
+
+                    if (countStones(possibleState2) == possibleState2.numberOfSpots - 1) {
+                        // If all the spots are filled in except for one, one of the 
+                        // possible states are to leave the last spot open. Create that
+                        // state and push it to the array of possible states.
+
+                        var index = "";
+
+                        placeStone(possibleState2, index, false, true);
+
+                        possibleStates.push(possibleState2);
+                    }
                 }
 
                 if (placed) {
