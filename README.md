@@ -22,5 +22,8 @@ The game is over when all spots on the board are completely filled with
 stones or if the last player opts to not place a stone on the board.
 
 ## How to Play
-Open up index.html, and click on an empty spot on the board. The white stone lives are
-displayed to the left, while the black stone lives are displayed to the right.
+Open up index.html, and click on an empty spot on the board. The score is shown to the top left
+under the game title, while the reset button is shown on the top right under the game title.
+The left score is the number of white stone lives, while the number on the right is the 
+number of black stone lives. The reset button will refresh the page so that you can play
+a new game.
