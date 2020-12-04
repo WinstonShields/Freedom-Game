@@ -6,6 +6,7 @@ const status = document.getElementById('status');
 const displayResults = document.getElementById('results');
 
 /**
+ * The number of stones present on the board are counted.
  * 
  * @param {State} state current game state.
  */
@@ -25,6 +26,7 @@ function countStones(state) {
 }
 
 /**
+ * If the game is in a terminal state, the game will end.
  * 
  * @param {State} state the game state.
  * @param {boolean} copy truth value for whether the state is a copy or the main state.
@@ -62,6 +64,8 @@ function gameOver(state, copy) {
 }
 
 /**
+ * This function counts the stones in a row and increments a life if there
+ * are four in a row. It removes a life if there are more than four in a row.
  * 
  * @param {State} state current state of game.
  * @param {int} row Board row.
@@ -128,6 +132,7 @@ function counter(state, row, col, blackCount, whiteCount, stopSubBlack, stopSubW
 }
 
 /**
+ * This function is made for counting lives that are diagonally placed.
  * 
  * @param {State} state current game state.
  */
@@ -180,6 +185,7 @@ function countDiagonal(state) {
 }
 
 /**
+ * This is the main function loop for counting lives.
  * 
  * @param {State} state the game state.
  * @param {boolean} copy truth value on whether the state is a copy or not.
@@ -240,6 +246,7 @@ function stoneDifference(state) {
 }
 
 /**
+ * This function checks if the game board is empty.
  * 
  * @param {array} board game state board.
  */
@@ -259,6 +266,8 @@ function boardEmpty(board) {
 }
 
 /**
+ * This function checks if there any spots adjacent to the previously
+ * placed stone that are empty. If not, the freedom rule is enabled.
  * 
  * @param {State} state current game state.
  */
@@ -310,6 +319,7 @@ function freedom(state) {
 
 
 /**
+ * The human player and the AI player place a stone on the board.
  * 
  * @param {State} state the game state.
  * @param {int} index the index of the board.
@@ -437,6 +447,7 @@ function placeStone(state, index, human, copy) {
 }
 
 /**
+ * This function is for displaying the stones on GUI.
  * 
  * @param {int} index the index of the board.
  * @param {boolean} human boolean representation of who placed the stone.
